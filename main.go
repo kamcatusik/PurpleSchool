@@ -12,6 +12,7 @@ func main() {
 	//EURtoRUB := USDtoRUB / USDtoEUR
 	//fmt.Printf("%.2f", EURtoRUB)
 	x1, x2, x3 := input() // строка число строка
+
 	//fmt.Println(x1, x2, x3)
 	fmt.Printf("%.2f", curConv(x1, x2, x3))
 
@@ -34,16 +35,14 @@ func input() (string, int, string) {
 
 	for {
 		fmt.Println("Введите количество валюты")
-		_, err := fmt.Scan(&amount)
-
-		if err != nil || amount <= 0 {
-			fmt.Println("Некоректные данные")
-			fmt.Scan(&amount)
+		fmt.Scan(&amount)
+		err := ValidCuant(amount)
+		if err != nil {
+			fmt.Println(err)
 			continue
-		} else {
-			break
 		}
 
+		break
 	}
 
 	switch {
@@ -72,6 +71,14 @@ func input() (string, int, string) {
 func ValidCur(a string) error {
 	if a != "USD" && a != "EUR" && a != "RUB" {
 		return errors.New("Некоретный ввод валюты, попробуйте еще раз")
+	}
+	return nil
+}
+
+// ошибки ввода количества
+func ValidCuant(a int) error {
+	if a <= 0 {
+		return errors.New("Неверные данный1")
 	}
 	return nil
 }
