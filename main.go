@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+//ошибки
+
 const USDtoEUR float64 = 0.92  //стоимость доллара к евро
 const USDtoRUB float64 = 89.10 //стоимость доллара к рублю
 func main() {
