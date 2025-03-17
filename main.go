@@ -2,12 +2,28 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-const USDtoEUR float64 = 0.92  //стоимость доллара к евро
-const USDtoRUB float64 = 89.10 //стоимость доллара к рублю
+type curMap = map[string]map[string]float64
 
 func main() {
+
+	curency := map[string]map[string]float64{
+		"USD": {
+			"EUR": 0.92,
+			"RUB": 89.10,
+		},
+		"EUR": {
+			"USD": 1 / 0.92,
+			"RUB": 89.10 / 0.92,
+		},
+		"RUB": {
+			"USD": 1 / 89.10,
+			"EUR": 0.92 / 89.10,
+		},
+	}
+
 	for {
 		fromCur := getCurInput("Введите исходную валюту (USD, RUB, EUR): ")
 
@@ -15,7 +31,7 @@ func main() {
 
 		toCur := getCurInput(fmt.Sprintf("Введите валюту конвертации (кроме %s): ", fromCur))
 
-		res, err := curConv(fromCur, amount, toCur)
+		res, err := curConv(fromCur, amount, toCur, curency)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -29,18 +45,19 @@ func main() {
 
 // Считываем  валюту
 func getCurInput(s string) string {
-	var cur1 string
+	var cur1, curUp string
+
 	for {
 		fmt.Println(s)
 		fmt.Scan(&cur1)
-
-		if cur1 != "USD" && cur1 != "EUR" && cur1 != "RUB" {
+		curUp = strings.ToUpper(cur1)
+		if curUp != "USD" && curUp != "EUR" && curUp != "RUB" {
 			fmt.Println("Неверная валюта")
 			continue
 		}
 		break
 	}
-	return cur1
+	return curUp
 }
 
 // Считываем количество валюты
@@ -59,46 +76,17 @@ func getAmount(s string) int {
 	return amount
 }
 
-// конвертируем в USD
-func convertToUSD(currency string, amount int) (float64, error) {
-	switch currency {
-	case "USD":
-		return float64(amount), nil
-	case "EUR":
-		return float64(amount) / USDtoEUR, nil
-	case "RUB":
-		return float64(amount) / USDtoRUB, nil
-	default:
-		return 0, fmt.Errorf("валюта %s не поддерживается1", currency)
-	}
-}
+// конвертация через мап
+func curConv(fromCur string, amount int, toCur string, curency curMap) (float64, error) {
+	insideMap, isBe := curency[fromCur] // Ищем исходную валюту в мапе, если не находим шлем на ***
+	if !isBe {
+		return 0, fmt.Errorf("Валюта не найдена %s", fromCur)
 
-// конвертируем из USD
-func convertFromUSD(currency string, usdAmount float64) (float64, error) {
-	switch currency {
-	case "USD":
-		return usdAmount, nil
-	case "EUR":
-		return usdAmount * USDtoEUR, nil
-	case "RUB":
-		return usdAmount * USDtoRUB, nil
-	default:
-		return 0, fmt.Errorf("валюта %s не поддерживается2", currency)
 	}
-}
+	value, isBe := insideMap[toCur] // а тут уже смотрим по внутреней мапе нужную нам валюту и опять же если нет то посылаем иначе все норм
+	if !isBe {
+		return 0, fmt.Errorf("Неверная валюта для конвертации %s", toCur)
+	}
+	return float64(amount) * value, nil
 
-// конвертация через USD
-func curConv(fromCur string, amount int, toCur string) (float64, error) {
-	// Конвертируем в USD
-	usdAmount, err := convertToUSD(fromCur, amount)
-	if err != nil {
-		return 0, err
-	}
-	// Конвертируем из USD
-	result, err := convertFromUSD(toCur, usdAmount)
-	if err != nil {
-		return 0, err
-	}
-
-	return result, nil
 }
