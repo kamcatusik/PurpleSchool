@@ -7,29 +7,29 @@ import (
 
 type curMap = map[string]map[string]float64
 
+var curency = curMap{
+	"USD": {
+		"EUR": 0.92,
+		"RUB": 89.10,
+	},
+	"EUR": {
+		"USD": 1 / 0.92,
+		"RUB": 89.10 / 0.92,
+	},
+	"RUB": {
+		"USD": 1 / 89.10,
+		"EUR": 0.92 / 89.10,
+	},
+}
+
 func main() {
 
-	curency := curMap{
-		"USD": {
-			"EUR": 0.92,
-			"RUB": 89.10,
-		},
-		"EUR": {
-			"USD": 1 / 0.92,
-			"RUB": 89.10 / 0.92,
-		},
-		"RUB": {
-			"USD": 1 / 89.10,
-			"EUR": 0.92 / 89.10,
-		},
-	}
-
 	for {
-		fromCur := getCurInput("Введите исходную валюту (USD, RUB, EUR): ") //исходная валюта
+		fromCur, err := getCurInput("Введите исходную валюту (USD, RUB, EUR): ") //исходная валюта
 
 		amount := getAmount("Введите количество валюты: ")
 
-		toCur := getCurInput(fmt.Sprintf("Введите валюту конвертации (кроме %s): ", fromCur)) //конвертируемая валюта
+		toCur, err := getCurInput(fmt.Sprintf("Введите валюту конвертации (кроме %s):", fromCur)) //конвертируемая валюта
 
 		res, err := curConv(fromCur, amount, toCur, &curency) // Конвертируем
 		if err != nil {
@@ -44,20 +44,22 @@ func main() {
 }
 
 // Считываем  валюту
-func getCurInput(s string) string {
+func getCurInput(s string) (string, error) {
 	var cur1, curUp string
 
 	for {
 		fmt.Println(s)
 		fmt.Scan(&cur1)
 		curUp = strings.ToUpper(cur1)
-		if curUp != "USD" && curUp != "EUR" && curUp != "RUB" {
-			fmt.Println("Неверная валюта")
-			continue
+		_, isBe := curency[curUp] // Ищем исходную валюту в мапе, если не находим шлем на ***
+		if !isBe {
+			return "", fmt.Errorf("Валюта не найдена %s", curUp)
+
 		}
-		break
+		return curUp, nil
+
 	}
-	return curUp
+
 }
 
 // Считываем количество валюты
