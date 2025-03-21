@@ -1,91 +1,98 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"math"
+	"strings"
 )
+
+type curMap = map[string]map[string]float64
+
+var curency = curMap{
+	"USD": {
+		"EUR": 0.92,
+		"RUB": 89.10,
+	},
+	"EUR": {
+		"USD": 1 / 0.92,
+		"RUB": 89.10 / 0.92,
+	},
+	"RUB": {
+		"USD": 1 / 89.10,
+		"EUR": 0.92 / 89.10,
+	},
+}
 
 func main() {
 
-	//var agrem string
 	for {
-		height, kg := getUserInput()
-		imt, err := CalcIMT(height, kg)
+		fromCur, err := getCurInput("Введите исходную валюту (USD, RUB, EUR): ") //исходная валюта
+
+		amount := getAmount("Введите количество валюты: ")
+
+		toCur, err := getCurInput(fmt.Sprintf("Введите валюту конвертации (кроме %s):", fromCur)) //конвертируемая валюта
+
+		res, err := curConv(fromCur, amount, toCur, &curency) // Конвертируем
 		if err != nil {
 			fmt.Println(err)
 			continue
-			//panic("Неверные параметры")
 		}
-		outputResult(imt)
-		isAgrem, err := Agrement()
-		if err != nil {
-			fmt.Println(err)
+
+		fmt.Printf("%s: %.2f", toCur, res)
+		break
+	}
+
+}
+
+// Считываем  валюту
+func getCurInput(s string) (string, error) {
+	var cur1, curUp string
+
+	for {
+		fmt.Println(s)
+		fmt.Scan(&cur1)
+		curUp = strings.ToUpper(cur1)
+		_, isBe := curency[curUp] // Ищем исходную валюту в мапе, если не находим шлем на ***
+		if !isBe {
+			return "", fmt.Errorf("Валюта не найдена %s", curUp)
+
+		}
+		return curUp, nil
+
+	}
+
+}
+
+// Считываем количество валюты
+func getAmount(s string) int {
+	var amount int
+
+	for {
+
+		fmt.Println(s)
+		_, err := fmt.Scan(&amount)
+
+		if err != nil && amount <= 0 {
+			fmt.Println("Введите целое число")
+			fmt.Scanln()
 			continue
-			//panic("Неверные данные")
-
 		}
-
-		//fmt.Println(err)
-		//	break
-		//}
-		if !isAgrem {
-			break
-
-		}
-
+		break
 	}
+	return amount
 
 }
 
-func Agrement() (bool, error) {
-	fmt.Println("Желаете провести еще расчет? Yes/No")
-	var agrem string
-	fmt.Scan(&agrem)
-	if agrem != "Yes" || agrem != "yes" {
-		return false, errors.New("Введите Yes или No")
+// конвертация через мап
+func curConv(fromCur string, amount int, toCur string, curency *curMap) (float64, error) {
+	insideMap, isBe := (*curency)[fromCur] // Ищем исходную валюту в мапе, если не находим шлем на ***
+	if !isBe {
+		return 0, fmt.Errorf("Валюта не найдена %s", fromCur)
 
 	}
-	if agrem == "Yes" || agrem == "yes" {
-		return true, nil
+	value, isBe := insideMap[toCur] // а тут уже смотрим по внутреней мапе нужную нам валюту и опять же если нет то посылаем иначе все норм
+	if !isBe {
+		return 0, fmt.Errorf("Неверная валюта для конвертации %s", toCur)
 	}
-	fmt.Print("Мы закончили с расчетами")
-	return false, nil
+	return float64(amount) * value, nil
 
-}
-func outputResult(imt float64) {
-	result := fmt.Sprintf("%s %.2f", "Ваш ИМТ:", imt)
-	switch {
-	case imt < 16:
-		fmt.Println("Иди съешь шавуху")
-	case imt < 18.5:
-		fmt.Println("У вас дефицит массы тела")
-	case imt < 25:
-		fmt.Println("У вас нормальый вес")
-	case imt < 30:
-		fmt.Println("У вас избыточный вес")
-	default:
-		fmt.Println("Ты слишком жирный")
-	}
-	fmt.Println(result)
-
-}
-func CalcIMT(height float64, kg float64) (float64, error) {
-	if kg <= 0 || height <= 0 {
-		return 0, errors.New("Неверно указан вес или рост")
-
-	}
-	const power = 2
-	imt := kg / math.Pow(height/100, power)
-	return imt, nil
-
-}
-func getUserInput() (float64, float64) {
-	var height, kg float64
-
-	fmt.Print("Введите свой рост: ")
-	fmt.Scan(&height)
-	fmt.Print("Введите свой вес: ")
-	fmt.Scan(&kg)
-	return height, kg
 }
