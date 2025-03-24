@@ -12,20 +12,20 @@ type BinList struct {
 }
 
 // создаем список Бинов
-func CreatBinList() *BinList {
+func CreatBinList() (*BinList, error) {
 
 	file, err := files.ReadFile("save.json")
 	if err != nil {
 		return &BinList{
 			Bin: []Bin{},
-		}
+		}, err
 	}
 	var storage BinList
 	err = json.Unmarshal(file, &storage)
 	if err != nil {
 		fmt.Println("Не удалось разобрать файл save.json")
 	}
-	return &storage
+	return &storage, nil
 }
 
 // преобразование в массив байт

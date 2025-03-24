@@ -7,7 +7,10 @@ import (
 )
 
 func main() {
-	bin := bins.CreatBinList()
+	bin, err := bins.CreatBinList()
+	if err != nil {
+		fmt.Println(err)
+	}
 	CreatBin(bin)
 
 }
