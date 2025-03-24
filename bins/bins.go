@@ -1,18 +1,19 @@
 package bins
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"time"
 )
 
 type Bin struct {
-	Id        string
-	Private   bool
-	CreatedAt time.Time
-	Name      string
+	Id        string    `json:"ID"`
+	Private   bool      `json:"Private"`
+	CreatedAt time.Time `json:"TimeCreated"`
+	Name      string    `json:"Name"`
 }
+
+// создаем масив Бинов
 type BinList []Bin
 
 // генерация ID
@@ -41,53 +42,18 @@ func NewBin(name string, privat bool) *Bin {
 }
 
 // создаем список Бинов
-func CreatBinList(r *Bin) BinList {
+func CreatBinList(bins *Bin) BinList {
 	var bin BinList
-	var name string
-	var privat bool
-	if r != nil {
-		bin = append(bin, *r)
-	}
-	for {
-		//спрашиваем о новом элемента
-		fmt.Println("Добавить новый элемент в список yes/no")
-		fmt.Scan(&name)
-		if name == "no" {
-			break
-		}
-		//добавлем имя нового элемента
-		name, err := Input("Введите название")
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		//приватизируем наш БИН
-		privatStr, err := Input("Введите true или false")
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
 
-		if privatStr == "false" {
-			privat = false
-		} else {
-			privat = true
-		}
-		//создаем Бин
-		newBin1 := NewBin(name, privat)
-		//добавляем в список наш бин
-		bin = append(bin, *newBin1)
+	var privat bool
+	file, err := files.ReadFile("save.json")
+	if bin != nil {
+		bin = append(bin, *bins)
 	}
+
+	newBin1 := NewBin(name, privat)
+	//добавляем в список наш бин
+	bin = append(bin, *newBin1)
 	//возвращаем список бинов
 	return bin
-}
-func Input(s string) (string, error) {
-	var result string
-	fmt.Println(s)
-	_, err := fmt.Scanln(&result)
-	if err != nil || result == "" {
-		return "", errors.New("введены не коректные данные, повторите ввод")
-	}
-
-	return result, nil
 }
