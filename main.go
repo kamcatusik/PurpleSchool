@@ -26,6 +26,9 @@ func CreatBin(bin *bins.BinList) {
 	}
 
 	privatStr, err := Input("Введите приватность вашего Bin true/false")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	if privatStr == "true" {
 		privat = true
