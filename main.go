@@ -2,12 +2,13 @@ package main
 
 import (
 	"cli/jason/bins"
+	"cli/jason/files"
 	"errors"
 	"fmt"
 )
 
 func main() {
-	bin, err := bins.CreatBinList()
+	bin, err := bins.CreatBinList(files.NewJson("save.json"))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -16,7 +17,7 @@ func main() {
 }
 
 // создаем новый бин
-func CreatBin(bin *bins.BinList) {
+func CreatBin(bin *bins.BinListWithStor) {
 	privat := false
 	//заправшивем имя Бина
 	name, err := Input("Введите название вашеего Bin")

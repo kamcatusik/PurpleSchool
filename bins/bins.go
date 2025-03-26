@@ -26,7 +26,7 @@ func (n *Bin) genID() {
 
 // Создаем Структуру
 func NewBin(name string, privat bool) *Bin {
-	//инициализируем новую хуету по структуре
+
 	newBin := &Bin{
 
 		Private:   privat,

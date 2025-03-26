@@ -7,21 +7,33 @@ import (
 	"os"
 )
 
-// читаем файл и проверяем на формат json
-func ReadFile(name string) ([]byte, error) {
-	data, err := os.ReadFile(name)
-	if err != nil {
-		return nil, fmt.Errorf("не удалось прчитать файл %s", name)
+type JsonStor struct {
+	filename string
+}
+
+// создаем структуру нашего файла
+func NewJson(name string) *JsonStor {
+	return &JsonStor{
+		filename: name,
 	}
+}
+
+// читаем файл и проверяем на формат json
+func (stor *JsonStor) ReadFile() ([]byte, error) {
+	data, err := os.ReadFile(stor.filename)
+	if err != nil {
+		return nil, fmt.Errorf("не удалось прчитать файл %s", stor.filename)
+	}
+	//проверка на формат json
 	if !json.Valid(data) {
-		return nil, fmt.Errorf("файл %s не является валидным JSON", name)
+		return nil, fmt.Errorf("файл %s не является валидным JSON", stor.filename)
 	}
 	return data, nil
 }
 
-func WriteFile(fileName string, content []byte) error {
+func (stor *JsonStor) WriteFile(content []byte) error {
 	//создаем файл
-	file, err := os.Create(fileName)
+	file, err := os.Create(stor.filename)
 	if err != nil {
 
 		return errors.New("не удалось создать файл")

@@ -1,7 +1,6 @@
 package bins
 
 import (
-	"cli/jason/files"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,11 +10,20 @@ import (
 type BinList struct {
 	Bin []Bin
 }
+type Stor interface {
+	ReadFile() ([]byte, error)
+	WriteFile(content []byte) error
+}
+
+type BinListWithStor struct {
+	stor Stor
+	BinList
+}
 
 // создаем список Бинов
-func CreatBinList() (*BinList, error) {
+func CreatBinList(stor Stor) (*BinListWithStor, error) {
 
-	file, err := files.ReadFile("save.json")
+	file, err := stor.ReadFile()
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +32,10 @@ func CreatBinList() (*BinList, error) {
 	if err != nil {
 		fmt.Println("Не удалось разобрать файл save.json")
 	}
-	return &storage, nil
+	return &BinListWithStor{
+		stor:    stor,
+		BinList: storage,
+	}, nil
 }
 
 // преобразование в массив байт
@@ -34,11 +45,12 @@ func (binlist *BinList) ToBytes() ([]byte, error) {
 		return nil, err
 
 	}
+
 	return file, nil
 }
 
 // добавление Бина файл
-func (binlist *BinList) AddBinToFile(bin Bin) error {
+func (binlist *BinListWithStor) AddBinToFile(bin Bin) error {
 
 	binlist.Bin = append(binlist.Bin, bin)
 	data, err := binlist.ToBytes()
@@ -46,7 +58,7 @@ func (binlist *BinList) AddBinToFile(bin Bin) error {
 		return errors.New("не удалось добавить новый Bin")
 	}
 
-	err = files.WriteFile("save.json", data)
+	err = binlist.stor.WriteFile(data)
 	if err != nil {
 		return err
 	}
