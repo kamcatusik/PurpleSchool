@@ -3,6 +3,7 @@ package bins
 import (
 	"cli/jason/files"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -16,9 +17,7 @@ func CreatBinList() (*BinList, error) {
 
 	file, err := files.ReadFile("save.json")
 	if err != nil {
-		return &BinList{
-			Bin: []Bin{},
-		}, err
+		return nil, err
 	}
 	var storage BinList
 	err = json.Unmarshal(file, &storage)
@@ -39,15 +38,17 @@ func (binlist *BinList) ToBytes() ([]byte, error) {
 }
 
 // добавление Бина файл
-func (binlist *BinList) AddBinToFile(bin Bin) {
+func (binlist *BinList) AddBinToFile(bin Bin) error {
 
 	binlist.Bin = append(binlist.Bin, bin)
 	data, err := binlist.ToBytes()
 	if err != nil {
-
-		fmt.Println("Не удалось преобразовать файл")
+		return errors.New("не удалось добавить новый Bin")
 	}
 
-	files.WriteFile("save.json", data)
-
+	err = files.WriteFile("save.json", data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

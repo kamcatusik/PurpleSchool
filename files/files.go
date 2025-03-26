@@ -2,6 +2,7 @@ package files
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 )
@@ -18,18 +19,19 @@ func ReadFile(name string) ([]byte, error) {
 	return data, nil
 }
 
-func WriteFile(fileName string, content []byte) {
+func WriteFile(fileName string, content []byte) error {
 	//создаем файл
 	file, err := os.Create(fileName)
 	if err != nil {
-		fmt.Println("Не удалось создать файл")
-		return
+
+		return errors.New("не удалось создать файл")
 	}
 	//записываем в файл
 	_, err = file.Write(content)
 	if err != nil {
-		fmt.Println("Не удалось записать файл")
-		return
+
+		return errors.New("не удалось записать файл")
 	}
 	fmt.Println("Запись успешна")
+	return nil
 }
