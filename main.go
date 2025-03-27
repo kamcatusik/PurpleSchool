@@ -10,6 +10,12 @@ import (
 	"strings"
 )
 
+var calculate = map[string]func(arr []int) float64{
+	"AVG": AVG,
+	"SUM": SUM,
+	"MED": MED,
+}
+
 func main() {
 
 	var operation string
@@ -21,10 +27,15 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
+		menuFunc := calculate[operation]
+		if menuFunc == nil {
+			break
+		}
+		fmt.Println(menuFunc(arr))
 		break
 	}
 
-	switch operation {
+	/*switch operation {
 	case "AVG":
 		fmt.Println(AVG(arr))
 	case "SUM":
@@ -32,6 +43,7 @@ func main() {
 	case "MED":
 		fmt.Println(MED(arr))
 	}
+	*/
 
 }
 
@@ -42,17 +54,17 @@ func AVG(arr []int) float64 {
 	for _, elem := range arr {
 		sum += float64(elem)
 	}
-	avg = sum / float64((len(arr) + 1))
+	avg = sum / float64(len(arr))
 	return avg
 }
 
 // Расчет суммы массива
-func SUM(arr []int) int {
+func SUM(arr []int) float64 {
 	sum := 0
 	for _, elem := range arr {
 		sum += elem
 	}
-	return sum
+	return float64(sum)
 }
 
 // расчет медианы
@@ -62,7 +74,7 @@ func MED(arr []int) float64 {
 	if n%2 == 0 {
 		return AVG(arr)
 	} else {
-		return float64(n / 2)
+		return float64(arr[n/2])
 	}
 }
 
@@ -74,12 +86,11 @@ func input() (string, []int, error) {
 	scanner.Scan()
 	operation := scanner.Text()
 	UpOperation := strings.ToUpper(operation)
-	if UpOperation == "SUM" || UpOperation == "MED" || UpOperation == "AVG" {
-
-	} else {
+	if UpOperation != "SUM" && UpOperation != "MED" && UpOperation != "AVG" {
 		return "", nil, errors.New("неверный ввод, введите SUM/MED/AVG")
 	}
-	fmt.Println("Введител числа через запятую")
+
+	fmt.Println("Введите числа через запятую")
 	scanner.Scan()
 	input := scanner.Text()
 	if len(input) == 0 {
