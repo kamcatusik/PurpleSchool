@@ -1,6 +1,7 @@
 package bins
 
 import (
+	"cli/jason/logger"
 	"fmt"
 	"math/rand"
 	"time"
@@ -22,6 +23,7 @@ func (n *Bin) genID() {
 		genPas[i] = choiceGenPas[rand.Intn(len(choiceGenPas))]
 	}
 	n.Id = string(genPas)
+	logger.InfoLog.Print("Пароль сгенерирован")
 }
 
 // Создаем Структуру

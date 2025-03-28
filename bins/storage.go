@@ -1,9 +1,8 @@
 package bins
 
 import (
+	"cli/jason/logger"
 	"encoding/json"
-	"errors"
-	"fmt"
 )
 
 // создаем масив Бинов
@@ -25,12 +24,13 @@ func CreatBinList(stor Stor) (*BinListWithStor, error) {
 
 	file, err := stor.ReadFile()
 	if err != nil {
+		logger.ErrorLog.Print("Не прочитан файл ")
 		return nil, err
 	}
 	var storage BinList
 	err = json.Unmarshal(file, &storage)
 	if err != nil {
-		fmt.Println("Не удалось разобрать файл save.json")
+		logger.ErrorLog.Print("Не удалось разобрать файл save.json")
 	}
 	return &BinListWithStor{
 		stor:    stor,
@@ -55,12 +55,15 @@ func (binlist *BinListWithStor) AddBinToFile(bin Bin) error {
 	binlist.Bin = append(binlist.Bin, bin)
 	data, err := binlist.ToBytes()
 	if err != nil {
-		return errors.New("не удалось добавить новый Bin")
+		logger.ErrorLog.Print(err)
+		return err
 	}
 
 	err = binlist.stor.WriteFile(data)
 	if err != nil {
+		logger.ErrorLog.Print(err)
 		return err
 	}
+	logger.InfoLog.Print("Бин добавлен в файл")
 	return nil
 }
