@@ -24,6 +24,7 @@ func main() {
 		logger.ErrorLog.Fatalf("Не удалось создать бины %v", err)
 	}
 	CreatBin(bin)
+	logger.InfoLog.Println("Программа завершена")
 
 }
 
@@ -33,11 +34,14 @@ func CreatBin(bin *bins.BinListWithStor) {
 	var name string
 	var err error
 	//заправшивем имя Бина
+	for {
+		name, err = Input("Введите название вашеего Bin")
+		if err != nil {
+			logger.ErrorLog.Print("Ошибка неверно задано имя")
+			continue
 
-	name, err = Input("Введите название вашеего Bin")
-	if err != nil {
-		logger.ErrorLog.Fatal("Ошибка Бин не создан, перезапустите программу")
-
+		}
+		break
 	}
 
 	privatStr, err := Input("Введите приватность вашего Bin true/false")
@@ -57,10 +61,13 @@ func CreatBin(bin *bins.BinListWithStor) {
 func Input(s string) (string, error) {
 	var result string
 	fmt.Println(s)
+
 	_, err := fmt.Scanln(&result)
 	if err != nil && result == "" {
 		logger.ErrorLog.Print("Ошибка ввода или пустая строка")
+		//fmt.Println("пустая строка повторите ввод")
 		return "", err
+
 	}
 
 	return result, nil
