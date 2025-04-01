@@ -1,20 +1,20 @@
 package config
 
 import (
-	"cli/jason/logger"
 	"os"
 )
 
 type Config struct {
-	Key string
+	MasterKey string
 }
 
 func NewConfig() *Config {
-	key := os.Getenv("KEY")
-	if key == "" {
-		logger.InfoLog.Fatalf("Не передан KEY")
+	MasterKey := os.Getenv("X_MASTER_KEY")
+	if MasterKey == "" {
+		panic("Пустая строка, нет ключа доступа")
 	}
+
 	return &Config{
-		Key: key,
+		MasterKey: MasterKey,
 	}
 }

@@ -1,13 +1,13 @@
 package bins
 
 import (
-	"cli/jason/logger"
 	"encoding/json"
+	"fmt"
 )
 
 // создаем масив Бинов
 type BinList struct {
-	Bin []Bin
+	Bin []Bin `json:"Bin"`
 }
 type Stor interface {
 	ReadFile() ([]byte, error)
@@ -15,7 +15,7 @@ type Stor interface {
 }
 
 type BinListWithStor struct {
-	stor Stor
+	Stor Stor
 	BinList
 }
 
@@ -24,16 +24,16 @@ func CreatBinList(stor Stor) (*BinListWithStor, error) {
 
 	file, err := stor.ReadFile()
 	if err != nil {
-		logger.ErrorLog.Print("Не прочитан файл ")
-		return nil, err
+
+		return nil, fmt.Errorf("не прочитан файл ")
 	}
 	var storage BinList
 	err = json.Unmarshal(file, &storage)
 	if err != nil {
-		logger.ErrorLog.Print("Не удалось разобрать файл save.json")
+		return nil, fmt.Errorf("не удалось разобрать файл save.json")
 	}
 	return &BinListWithStor{
-		stor:    stor,
+		Stor:    stor,
 		BinList: storage,
 	}, nil
 }
@@ -55,15 +55,51 @@ func (binlist *BinListWithStor) AddBinToFile(bin Bin) error {
 	binlist.Bin = append(binlist.Bin, bin)
 	data, err := binlist.ToBytes()
 	if err != nil {
-		logger.ErrorLog.Print(err)
+
 		return err
 	}
 
-	err = binlist.stor.WriteFile(data)
+	err = binlist.Stor.WriteFile(data)
 	if err != nil {
-		logger.ErrorLog.Print(err)
+
 		return err
 	}
-	logger.InfoLog.Print("Бин добавлен в файл")
+
 	return nil
+}
+func (binlist *BinListWithStor) DelBin(id string) (bool, error) {
+	var bins []Bin
+	isDeleted := false
+	for _, bin := range binlist.Bin {
+		if bin.Id == id {
+			isDeleted = true
+		} else {
+
+			bins = append(bins, bin)
+
+		}
+
+	}
+	if !isDeleted {
+
+		return false, nil
+	}
+
+	//присваевываем нашему хранилищу новые данные сохраненные в наш слайс аккаунтов и записываем в файл
+	binlist.Bin = bins
+
+	data, err := binlist.ToBytes()
+	if err != nil {
+		return true, fmt.Errorf("не удалось преобразовать список бинов")
+
+	}
+
+	err = binlist.Stor.WriteFile(data)
+
+	if err != nil {
+
+		return true, fmt.Errorf("не удалось записать список бинов")
+	}
+	return isDeleted, nil
+
 }
