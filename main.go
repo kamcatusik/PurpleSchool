@@ -1,91 +1,74 @@
 package main
 
 import (
-	"errors"
+	"cli/jason/bins"
+	"cli/jason/files"
+	"cli/jason/logger"
 	"fmt"
-	"math"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	logger.LogInit()
+	logger.InfoLog.Println("Программа запущена")
+	defer logger.Close()
 
-	//var agrem string
+	//загружаем env файл
+	err := godotenv.Load()
+	if err != nil {
+		logger.ErrorLog.Fatal("Не удалось найти env файл")
+	}
+	bin, err := bins.CreatBinList(files.NewJson("save.json"))
+	if err != nil {
+		logger.ErrorLog.Fatalf("Не удалось создать бины %v", err)
+	}
+	CreatBin(bin)
+	logger.InfoLog.Println("Программа завершена")
+
+}
+
+// создаем новый бин
+func CreatBin(bin *bins.BinListWithStor) {
+	privat := false
+	var name string
+	var err error
+	//заправшивем имя Бина
 	for {
-		height, kg := getUserInput()
-		imt, err := CalcIMT(height, kg)
+		name, err = Input("Введите название вашеего Bin")
 		if err != nil {
-			fmt.Println(err)
+			logger.ErrorLog.Print("Ошибка неверно задано имя")
 			continue
-			//panic("Неверные параметры")
-		}
-		outputResult(imt)
-		isAgrem, err := Agrement()
-		if err != nil {
-			fmt.Println(err)
-			continue
-			//panic("Неверные данные")
 
 		}
+		break
+	}
 
-		//fmt.Println(err)
-		//	break
-		//}
-		if !isAgrem {
-			break
-
-		}
+	privatStr, err := Input("Введите приватность вашего Bin true/false")
+	if err != nil {
+		logger.InfoLog.Print("Приватность ключа false")
 
 	}
+
+	if privatStr == "true" {
+		privat = true
+	}
+	NewBin := bins.NewBin(name, privat)
+	bin.AddBinToFile(*NewBin)
+	logger.InfoLog.Print("Список Бинов создан успешно")
 
 }
+func Input(s string) (string, error) {
+	var result string
+	fmt.Println(s)
 
-func Agrement() (bool, error) {
-	fmt.Println("Желаете провести еще расчет? Yes/No")
-	var agrem string
-	fmt.Scan(&agrem)
-	if agrem != "Yes" || agrem != "yes" {
-		return false, errors.New("Введите Yes или No")
-
-	}
-	if agrem == "Yes" || agrem == "yes" {
-		return true, nil
-	}
-	fmt.Print("Мы закончили с расчетами")
-	return false, nil
-
-}
-func outputResult(imt float64) {
-	result := fmt.Sprintf("%s %.2f", "Ваш ИМТ:", imt)
-	switch {
-	case imt < 16:
-		fmt.Println("Иди съешь шавуху")
-	case imt < 18.5:
-		fmt.Println("У вас дефицит массы тела")
-	case imt < 25:
-		fmt.Println("У вас нормальый вес")
-	case imt < 30:
-		fmt.Println("У вас избыточный вес")
-	default:
-		fmt.Println("Ты слишком жирный")
-	}
-	fmt.Println(result)
-
-}
-func CalcIMT(height float64, kg float64) (float64, error) {
-	if kg <= 0 || height <= 0 {
-		return 0, errors.New("Неверно указан вес или рост")
+	_, err := fmt.Scanln(&result)
+	if err != nil && result == "" {
+		logger.ErrorLog.Print("Ошибка ввода или пустая строка")
+		//fmt.Println("пустая строка повторите ввод")
+		return "", err
 
 	}
-	const power = 2
-	imt := kg / math.Pow(height/100, power)
-	return imt, nil
 
-}
-func getUserInput() (float64, float64) {
-	var height, kg float64
-
-	fmt.Print("Введите свой рост: ")
-	fmt.Scan(&height)
-	fmt.Print("Введите свой вес: ")
-	fmt.Scan(&kg)
-	return height, kg
+	return result, nil
 }
