@@ -90,7 +90,7 @@ func (binlist *BinListWithStor) DelBin(id string) (bool, error) {
 
 	data, err := binlist.ToBytes()
 	if err != nil {
-		return true, fmt.Errorf("не удалось преобразовать список бинов")
+		return false, fmt.Errorf("не удалось преобразовать список бинов")
 
 	}
 
@@ -98,7 +98,7 @@ func (binlist *BinListWithStor) DelBin(id string) (bool, error) {
 
 	if err != nil {
 
-		return true, fmt.Errorf("не удалось записать список бинов")
+		return false, fmt.Errorf("не удалось записать список бинов")
 	}
 	return isDeleted, nil
 

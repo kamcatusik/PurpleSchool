@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"cli/jason/bins"
 	"cli/jason/config"
-	"cli/jason/logger"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,24 +29,24 @@ func requestApi(method, url string, body io.Reader, header map[string]string) (*
 	//делаем запрос
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
-
-		return nil, fmt.Errorf("не создан запрос")
+		return nil, errors.New("не создан запрос")
 	}
-	masterKey := config.NewConfig().MasterKey
 
+	masterKey := config.NewConfig().MasterKey
 	//req.Header.Set()
+	if masterKey == "" {
+		return nil, fmt.Errorf("отсутствует X_MASTER_KEY")
+	}
 
 	req.Header.Set("X-Master-Key", masterKey)
 	for key, value := range header {
 		req.Header.Set(key, value)
-		logger.InfoLog.Print(key, " ", value)
-	}
 
+	}
 	//отправляем запрос
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-
-		return nil, fmt.Errorf("запрос не отправлен")
+		return nil, errors.New("запрос не отправлен")
 	}
 
 	if resp.StatusCode != 200 {
@@ -64,9 +64,16 @@ func CreateBinPost(data []byte, nameBin string) (*bins.Bin, error) {
 		"X-Bin-Name":    nameBin,
 		"Content-Type":  "application/json",
 	}
+
 	resp, err := requestApi("POST", baseUrl, bytes.NewBuffer(data), headers)
 	if err != nil {
-		return nil, fmt.Errorf("запрос не выполнен")
+
+		return nil, errors.New("запрос не выполнен")
+	}
+
+	if resp == nil {
+
+		return nil, errors.New("получен пустой ответ")
 	}
 	defer resp.Body.Close()
 
@@ -75,8 +82,9 @@ func CreateBinPost(data []byte, nameBin string) (*bins.Bin, error) {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 
-		return nil, fmt.Errorf("не удалось прочитать ответ")
+		return nil, errors.New("не удалось прочитать ответ")
 	}
+
 	json.Unmarshal(body, &result)
 
 	return &bins.Bin{
@@ -100,23 +108,27 @@ func UpdateBin(data []byte, id string) error {
 	resp.Body.Close()
 	return nil
 }
-func GetBin(id string) error {
+func GetBin(id string) (*bins.Bin, error) {
 	resp, err := requestApi("GET", baseUrl+id, nil, nil)
 	if err != nil {
 
-		return fmt.Errorf("не удалось запросить Бин")
+		return nil, errors.New("не удалось запросить Бин")
 	}
 	defer resp.Body.Close()
 	var result ApiResp
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 
-		return fmt.Errorf("не удалось прочитать ответ")
+		return nil, errors.New("не удалось прочитать ответ")
 	}
 	json.Unmarshal(body, &result)
 
-	fmt.Printf("Данные Bin: %s\n %s", id, string(result.Record))
-	return nil
+	return &bins.Bin{
+		Id:        result.RespData.Id,
+		Private:   result.RespData.Private,
+		CreatedAt: result.RespData.CreatedAt,
+		Name:      result.RespData.Name,
+	}, nil
 }
 
 func DeleteBin(id string) error {

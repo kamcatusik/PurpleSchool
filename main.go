@@ -95,11 +95,12 @@ func readBin(id string) error {
 	if id == "" {
 		return fmt.Errorf("пустой Id.Введите id Бина")
 	}
-	err := api.GetBin(id)
+	_, err := api.GetBin(id)
 	if err != nil {
 
-		return fmt.Errorf("не удалось получить Бин")
+		return err
 	}
+
 	return nil
 }
 func deleteBin(bin *bins.BinListWithStor, id string) error {
