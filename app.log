@@ -1,7 +1,1 @@
-INFO: 2025/04/02 20:29:43 main.go:18: Программа запущена
-INFO: 2025/04/02 20:29:43 config.go:14: Ключ спаршен
-INFO: 2025/04/02 20:29:43 api.go:37: Ключ спаршен
-INFO: 2025/04/02 20:29:43 api.go:43: X-Bin-Private true
-INFO: 2025/04/02 20:29:43 api.go:43: Content-Type application/json
-INFO: 2025/04/02 20:29:43 api.go:43: X-Bin-Name doifja
-INFO: 2025/04/02 20:29:44 api.go:83: Тело ответа: {"record":{"accounts":[{"login":"awefaesd","password":"HqzXKSM9o0rd","url":"http://a.ru","createdAt":"2024-05-15T12:46:49.200894+03:00","updatedAt":"2024-05-15T12:46:49.200895+03:00"},{"login":"aawefu","password":"kCNodDqc5sdst0W","url":"https://b.ru","createdAt":"2024-05-21T18:02:15.897296+03:00","updatedAt":"2024-05-21T18:02:15.897296+03:00"}],"updatedAt":"2024-05-22T20:00:19.623073+03:00"},"metadata":{"id":"67ed3bc98a456b7966812c03","createdAt":"2025-04-02T13:29:45.087Z","private":true,"name":"doifja"}}
+INFO: 2025/04/03 14:04:45 main.go:18: Программа запущена

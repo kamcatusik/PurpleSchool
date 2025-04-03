@@ -21,6 +21,13 @@ type ApiResp struct {
 		Name      string    `json:"name"`
 	} `json:"metadata"`
 }
+type UpdateResp struct {
+	Record         json.RawMessage `json:"record"`
+	UpdateRespData struct {
+		ParentId string `json:"parentId"`
+		Private  bool   `json:"private"`
+	} `json:"metadata"`
+}
 
 const baseUrl = "https://api.jsonbin.io/v3/b/"
 
@@ -31,7 +38,7 @@ func requestApi(method, url string, body io.Reader, header map[string]string) (*
 	if err != nil {
 		return nil, errors.New("не создан запрос")
 	}
-
+	fmt.Println("Бин верный1")
 	masterKey := config.NewConfig().MasterKey
 	//req.Header.Set()
 	if masterKey == "" {
@@ -51,10 +58,10 @@ func requestApi(method, url string, body io.Reader, header map[string]string) (*
 
 	if resp.StatusCode != 200 {
 
-		return nil, fmt.Errorf("ошибка доступа: %v", resp.Status)
+		return nil, errors.New(resp.Status)
 
 	}
-
+	fmt.Println("Бин верный3")
 	return resp, nil
 }
 
@@ -95,18 +102,28 @@ func CreateBinPost(data []byte, nameBin string) (*bins.Bin, error) {
 	}, nil
 }
 
-func UpdateBin(data []byte, id string) error {
+func UpdateBin(data []byte, id string) (*UpdateResp, error) {
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}
 
 	resp, err := requestApi("PUT", baseUrl+id, bytes.NewBuffer(data), headers)
 	if err != nil {
-
-		return fmt.Errorf("не удалось обновить Бин")
+		fmt.Printf("ошибка: %v", err)
+		return nil, fmt.Errorf("ошибка: %v", err)
 	}
-	resp.Body.Close()
-	return nil
+	fmt.Println("Бин верный")
+	defer resp.Body.Close()
+	var result UpdateResp
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+
+		return nil, errors.New("не удалось прочитать ответ")
+	}
+
+	json.Unmarshal(body, &result)
+
+	return &result, nil
 }
 func GetBin(id string) (*bins.Bin, error) {
 	resp, err := requestApi("GET", baseUrl+id, nil, nil)
@@ -136,7 +153,7 @@ func DeleteBin(id string) error {
 
 	if err != nil {
 
-		return fmt.Errorf("не удалось  удалить бин")
+		return errors.New("не удалось  удалить бин")
 	}
 	resp.Body.Close()
 	return nil

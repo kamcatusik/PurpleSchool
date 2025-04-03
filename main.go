@@ -80,14 +80,14 @@ func UpdateBin(fileName, id string) error {
 	data, err := os.ReadFile(fileName)
 	if err != nil {
 
-		return fmt.Errorf("не удалось прочитать файл")
+		return err
 	}
-	err = api.UpdateBin(data, id)
+	update, err := api.UpdateBin(data, id)
 	if err != nil {
-
-		return fmt.Errorf("не удалось обновить Бин")
+		return err
 	}
-	fmt.Printf("Бин обновлен успешно: %s", id)
+
+	fmt.Printf("Бин обновлен успешно: %s", update.UpdateRespData.ParentId)
 
 	return nil
 }
