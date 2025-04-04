@@ -1,0 +1,19 @@
+{
+    "accounts": [
+        {
+            "login": "awefaesd",
+            "password": "HqzXKSM9o0rd",
+            "url": "http://a.ru",
+            "createdAt": "2024-05-15T12:46:49.200894+03:00",
+            "updatedAt": "2024-05-15T12:46:49.200895+03:00"
+        },
+        {
+            "login": "aawefu",
+            "password": "kCNodDqc5sdst0W",
+            "url": "https://b.ru",
+            "createdAt": "2024-05-21T18:02:15.897296+03:00",
+            "updatedAt": "2024-05-21T18:02:15.897296+03:00"
+        }
+    ],
+    "updatedAt": "2024-05-22T20:00:19.623073+03:00"
+}

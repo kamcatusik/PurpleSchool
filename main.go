@@ -1,91 +1,135 @@
 package main
 
 import (
-	"errors"
+	"cli/jason/api"
+	"cli/jason/bins"
+	"cli/jason/files"
+	"cli/jason/logger"
+	"flag"
 	"fmt"
-	"math"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	//запускаем логгер
+	logger.LogInit()
+	logger.InfoLog.Println("Программа запущена")
+	defer logger.Close()
+	//инициализируем флаги
+	create := flag.Bool("create", false, "Создание нового Бин")
+	update := flag.Bool("update", false, "Обновление Бин")
+	delete := flag.Bool("delete", false, "Удаление Бина")
+	get := flag.Bool("get", false, "Создание нового Бин")
+	list := flag.Bool("list", false, "Создание нового Бин")
+	fileData := flag.String("file", "data.json", "Создание нового файла")
+	id := flag.String("id", "", "Создание нового Бин")
+	binName := flag.String("name", "", "Создание имени нового Бин")
+	flag.Parse()
 
-	//var agrem string
-	for {
-		height, kg := getUserInput()
-		imt, err := CalcIMT(height, kg)
-		if err != nil {
-			fmt.Println(err)
-			continue
-			//panic("Неверные параметры")
-		}
-		outputResult(imt)
-		isAgrem, err := Agrement()
-		if err != nil {
-			fmt.Println(err)
-			continue
-			//panic("Неверные данные")
-
-		}
-
-		//fmt.Println(err)
-		//	break
-		//}
-		if !isAgrem {
-			break
-
-		}
-
+	//загружаем env файл
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic("Не удалось прочитать .env")
+	}
+	bin, err := bins.CreatBinList(files.NewJson("save.json"))
+	if err != nil {
+		fmt.Println(err)
 	}
 
-}
-
-func Agrement() (bool, error) {
-	fmt.Println("Желаете провести еще расчет? Yes/No")
-	var agrem string
-	fmt.Scan(&agrem)
-	if agrem != "Yes" || agrem != "yes" {
-		return false, errors.New("Введите Yes или No")
-
-	}
-	if agrem == "Yes" || agrem == "yes" {
-		return true, nil
-	}
-	fmt.Print("Мы закончили с расчетами")
-	return false, nil
-
-}
-func outputResult(imt float64) {
-	result := fmt.Sprintf("%s %.2f", "Ваш ИМТ:", imt)
 	switch {
-	case imt < 16:
-		fmt.Println("Иди съешь шавуху")
-	case imt < 18.5:
-		fmt.Println("У вас дефицит массы тела")
-	case imt < 25:
-		fmt.Println("У вас нормальый вес")
-	case imt < 30:
-		fmt.Println("У вас избыточный вес")
-	default:
-		fmt.Println("Ты слишком жирный")
-	}
-	fmt.Println(result)
-
-}
-func CalcIMT(height float64, kg float64) (float64, error) {
-	if kg <= 0 || height <= 0 {
-		return 0, errors.New("Неверно указан вес или рост")
+	case *create:
+		CreatBin(bin, *fileData, *binName)
+	case *update:
+		UpdateBin(*fileData, *id)
+	case *get:
+		readBin(*id)
+	case *delete:
+		deleteBin(bin, *id)
+	case *list:
+		listBins(bin)
 
 	}
-	const power = 2
-	imt := kg / math.Pow(height/100, power)
-	return imt, nil
 
 }
-func getUserInput() (float64, float64) {
-	var height, kg float64
 
-	fmt.Print("Введите свой рост: ")
-	fmt.Scan(&height)
-	fmt.Print("Введите свой вес: ")
-	fmt.Scan(&kg)
-	return height, kg
+// создаем новый бин
+func CreatBin(bin *bins.BinListWithStor, fileName, binName string) error {
+
+	data, err := os.ReadFile(fileName)
+	if err != nil {
+		return fmt.Errorf("файл не был прочитан")
+	}
+	newBin, err := api.CreateBinPost(data, binName)
+	if err != nil {
+		return fmt.Errorf("бин не создан")
+
+	}
+	if binName != "" {
+		newBin.Name = binName
+	}
+
+	bin.AddBinToFile(*newBin)
+	return nil
+}
+func UpdateBin(fileName, id string) error {
+	if id == "" {
+		return fmt.Errorf("пустой Id.Введите id Бина")
+	}
+	data, err := os.ReadFile(fileName)
+	if err != nil {
+
+		return err
+	}
+	update, err := api.UpdateBin(data, id)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Бин обновлен успешно: %s", update.UpdateRespData.ParentId)
+
+	return nil
+}
+func readBin(id string) error {
+	if id == "" {
+		return fmt.Errorf("пустой Id.Введите id Бина")
+	}
+	_, err := api.GetBin(id)
+	if err != nil {
+
+		return err
+	}
+
+	return nil
+}
+func deleteBin(bin *bins.BinListWithStor, id string) error {
+	if id == "" {
+		return fmt.Errorf("пустой Id.Введите id Бина")
+	}
+	err := api.DeleteBin(id)
+	if err != nil {
+
+		return fmt.Errorf("не удалось получить Бин")
+	}
+
+	isDel, err := bin.DelBin(id)
+	if !isDel {
+		return fmt.Errorf("бинов не найдено")
+	}
+	if err != nil {
+		return fmt.Errorf("не удалось удалить бин из файла")
+	}
+
+	return nil
+}
+
+func listBins(binlist *bins.BinListWithStor) {
+	if len(binlist.Bin) == 0 {
+		fmt.Println("Список пустой")
+	}
+
+	for _, bin := range binlist.Bin {
+		fmt.Printf("ID: %s name: %s\n", bin.Id, bin.Name)
+	}
 }
