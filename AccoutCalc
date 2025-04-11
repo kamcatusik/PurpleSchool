@@ -1,0 +1,79 @@
+package main
+
+import "fmt"
+
+// в цикле спросить ввод транзакции ( число)
+//добавляем в массив
+//выводим массив
+//вывести сумму баланса в консоль
+func main() {
+
+	var tranz []float64
+	var sum float64
+
+	for {
+		tranzCur := ScanTranz()
+		if tranzCur == 0 {
+			break
+		}
+
+		tranz = append(tranz, tranzCur)
+		sum += tranzCur
+
+	}
+
+	fmt.Printf("Ваш баланс: %2.f", sum)
+
+}
+func ScanTranz() float64 {
+	var cur float64
+	var ask string
+	var control bool
+
+	for {
+		fmt.Println("Введите сумму транзакции")
+
+		_, err := fmt.Scan(&cur)
+		if err != nil {
+			fmt.Println("Неверные данные, повторите ввод")
+			var dummy string // очистка буфера
+			fmt.Scanln(&dummy)
+			continue
+		}
+
+		//Обработка дальнейшего ввода
+		for {
+			fmt.Println("Хотите добавить еще транзакцию? y/n")
+
+			_, err := fmt.Scan(&ask)
+
+			if err != nil {
+				fmt.Println("Неверные данные, введите y или n")
+				var dummy string //очистка буфера
+				fmt.Scanln(&dummy)
+				continue
+			}
+			if ask == "y" {
+				control = true
+				break
+
+			} else if ask == "n" { // выходим из внутреннего цикла если y или n
+				control = false
+				break
+			} else {
+				fmt.Println("Неверные данные, введите y или n")
+				var dummy string //очистка буфера
+				fmt.Scanln(&dummy)
+				continue
+			}
+
+		}
+
+		if !control { // выходим из внешнего цикла если n
+			return 0 // проверка на выход из цикла основного в мейне
+		}
+		return cur
+
+	}
+
+}
