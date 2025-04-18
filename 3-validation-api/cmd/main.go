@@ -3,11 +3,13 @@ package main
 import (
 	"3-validation-api/configs"
 	"3-validation-api/internal/verify"
+	"3-validation-api/logger"
 	"fmt"
 	"net/http"
 )
 
 func main() {
+	logger.LogInit()
 	fmt.Println("Запуск")
 	email := configs.LoadConfig()
 	fmt.Println(email.Address, email.Email, email.Password)
@@ -22,5 +24,6 @@ func main() {
 
 	fmt.Printf("Listen port%v\n", server.Addr)
 	server.ListenAndServe()
+
 	fmt.Println("Работа завершена")
 }

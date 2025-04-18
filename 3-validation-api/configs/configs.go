@@ -8,9 +8,13 @@ import (
 )
 
 type Config struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 	Address  string `json:"address"`
+}
+type EmailList struct {
+	Mail string `json:"email" validate:"required,email"`
+	Hash string `json:"hash"`
 }
 
 func LoadConfig() *Config {
