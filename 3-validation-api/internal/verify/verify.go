@@ -70,10 +70,12 @@ func (handler *EmailHandler) verify(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	if !isDel {
-		log.Println("Почта с хэшем не найдена")
-	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(isDel)
-	w.Write([]byte("Verify successfuly"))
+	if isDel {
+		w.Write([]byte("Verify successfuly"))
+	} else {
+		w.Write([]byte("Email not found"))
+	}
 }
