@@ -11,6 +11,9 @@ type Product struct {
 	Description string         `json:"description"`
 	Images      pq.StringArray `json:"images" gorm:"type:text[]"`
 }
+type AllProduct struct {
+	AllProd []Product `json:"allproduct"`
+}
 
 func NewProduct(name, des string, images []string) *Product {
 	return &Product{
