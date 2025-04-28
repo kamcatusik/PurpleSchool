@@ -35,11 +35,7 @@ func (handler *AuthHandler) register(w http.ResponseWriter, request *http.Reques
 		return
 	}
 	fmt.Println("Запрос получен")
-	findUser, err := handler.AuthService.UserRepository.FindUserByNum(body.Number)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	findUser, _ := handler.AuthService.UserRepository.FindUserByNum(body.Number)
 	if findUser == nil {
 		user, _ := handler.AuthService.Register(body.Number)
 		resp.Json(w, user, 201)
@@ -69,7 +65,8 @@ func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if findUser.SessionID == body.SessionID {
+
+	if findUser.SessionID == body.SessionID && findUser.Code == body.Code {
 
 		//выдаем токен
 		secret, err := jwte.NewJWT(handler.Auth.Secret).Create(body.SessionID)
@@ -83,6 +80,11 @@ func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request)
 		resp.Json(w, data, 200)
 		return
 	} else {
-		resp.Json(w, "Неверный sessionId", http.StatusNotFound)
+		_, err := handler.AuthService.UpdateCode(findUser, body.Code)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		resp.Json(w, "Неверный код, Код отправлен", 200)
 	}
 }

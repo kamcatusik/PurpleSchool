@@ -35,9 +35,16 @@ func (service *AuthService) Update(user *user.User) (*user.User, error) {
 
 	user.SessionID = rand.RandSession()
 
-	_, err := service.UserRepository.UpdateSessionId(user)
+	updateUser, err := service.UserRepository.UpdateSessionId(user)
 	if err != nil {
 		return nil, errors.New("ошибка обновления пользователя")
 	}
-	return user, nil
+	return updateUser, nil
+}
+func (service *AuthService) UpdateCode(user *user.User, code string) (*user.User, error) {
+	updateUser, err := service.UserRepository.UpdateCode(user, code)
+	if err != nil {
+		return nil, errors.New("ошибка обновления пользователя")
+	}
+	return updateUser, nil
 }

@@ -2,6 +2,7 @@ package user
 
 import (
 	"4-order-api/pkg/db"
+	"fmt"
 )
 
 type UserRepository struct {
@@ -45,4 +46,14 @@ func (repo *UserRepository) FindUserBySession(session string) (*User, error) {
 		return nil, result.Error
 	}
 	return &user, nil
+}
+func (repo *UserRepository) UpdateCode(user *User, code string) (*User, error) {
+	fmt.Printf("Имя пользователя: %v Пароль: %v\n", user.Number, user.Code)
+	result := repo.Database.DB.Model(&User{}).Where("id = ?", user.ID).Update("code", code)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	fmt.Printf("Имя пользователя: %v Пароль: %v\n", user.Number, user.Code)
+	return user, nil
+
 }
