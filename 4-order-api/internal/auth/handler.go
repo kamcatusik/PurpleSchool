@@ -1,0 +1,88 @@
+package auth
+
+import (
+	"4-order-api/configs"
+	jwte "4-order-api/pkg/JWTE"
+	"4-order-api/pkg/req"
+	"4-order-api/pkg/resp"
+	"fmt"
+	"net/http"
+)
+
+type AuthHandlerDeps struct {
+	*configs.Config
+	*AuthService
+}
+type AuthHandler struct {
+	*configs.Config
+	*AuthService
+}
+
+func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
+	handler := &AuthHandler{
+		Config:      deps.Config,
+		AuthService: deps.AuthService,
+	}
+	router.HandleFunc("POST /auth", handler.register)
+	router.HandleFunc("GET /auth/verify", handler.verify)
+}
+func (handler *AuthHandler) register(w http.ResponseWriter, request *http.Request) {
+	fmt.Println("Запрос")
+	// получаем тело запроса
+	body, err := req.HandleBody[RegisterRequest](w, request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Println("Запрос получен")
+	findUser, err := handler.AuthService.UserRepository.FindUserByNum(body.Number)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if findUser == nil {
+		user, _ := handler.AuthService.Register(body.Number)
+		resp.Json(w, user, 201)
+		return
+	} else {
+
+		userWithNewSession, err := handler.AuthService.Update(findUser)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		resp.Json(w, userWithNewSession, 200)
+	}
+
+	//запрашиваем код подтверждения
+	// проверяем sesiodID и код
+	//выдаем токен
+}
+func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request) {
+	body, err := req.HandleBody[VerifyRequest](w, request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	findUser, err := handler.AuthService.UserRepository.FindUserBySession(body.SessionID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if findUser.SessionID == body.SessionID {
+
+		//выдаем токен
+		secret, err := jwte.NewJWT(handler.Auth.Secret).Create(body.SessionID)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		data := VerifyResponse{
+			Token: secret,
+		}
+		resp.Json(w, data, 200)
+		return
+	} else {
+		resp.Json(w, "Неверный sessionId", http.StatusNotFound)
+	}
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"4-order-api/internal/product"
+	"4-order-api/internal/user"
 	"log"
 	"os"
 
@@ -20,6 +21,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.AutoMigrate(&product.Product{})
+	db.AutoMigrate(&product.Product{}, &user.User{})
 	log.Println("Новые поля добавлены.")
 }
