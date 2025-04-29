@@ -71,7 +71,7 @@ func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request)
 		//выдаем токен
 		secret, err := jwte.NewJWT(handler.Auth.Secret).Create(body.SessionID)
 		if err != nil {
-			fmt.Println(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		data := VerifyResponse{
