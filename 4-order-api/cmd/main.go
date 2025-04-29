@@ -4,15 +4,14 @@ import (
 	"4-order-api/configs"
 	"4-order-api/internal/product"
 	"4-order-api/pkg/db"
-	"4-order-api/pkg/logger"
-	"4-order-api/pkg/middleware"
+
 	"fmt"
 	"net/http"
 )
 
 func main() {
 	fmt.Println("Run")
-	logger.LogInit()
+
 	router := http.NewServeMux()
 	conf := configs.LoadConfig()
 	db := db.NewDb(conf)
@@ -22,7 +21,7 @@ func main() {
 	})
 	server := http.Server{
 		Addr:    ":8085",
-		Handler: middleware.Logging(router),
+		Handler: router,
 	}
 	fmt.Println("БД Создана")
 	fmt.Printf("Listen port%v\n", server.Addr)
