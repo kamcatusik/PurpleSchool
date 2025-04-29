@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Run")
 	logger.LogInit()
 	router := http.NewServeMux()
 	conf := configs.LoadConfig()
