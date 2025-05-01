@@ -29,6 +29,7 @@ func main() {
 	})
 	product.NewProductHandler(router, &product.ProductHandDeps{
 		ProductRepository: productRepository,
+		Config:            conf,
 	})
 	server := http.Server{
 		Addr:    ":8085",

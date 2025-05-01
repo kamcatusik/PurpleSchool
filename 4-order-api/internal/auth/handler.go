@@ -69,7 +69,10 @@ func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request)
 	if findUser.SessionID == body.SessionID && findUser.Code == body.Code {
 
 		//выдаем токен
-		secret, err := jwte.NewJWT(handler.Auth.Secret).Create(body.SessionID)
+		secret, err := jwte.NewJWT(handler.Auth.Secret).Create(jwte.JWTData{
+			Number:    findUser.Number,
+			SessionId: body.SessionID,
+		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

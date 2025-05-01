@@ -1,7 +1,15 @@
 package jwte
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"fmt"
 
+	"github.com/golang-jwt/jwt/v5"
+)
+
+type JWTData struct {
+	Number    string
+	SessionId string
+}
 type JWTE struct {
 	Secret string
 }
@@ -11,13 +19,27 @@ func NewJWT(secret string) *JWTE {
 		Secret: secret,
 	}
 }
-func (j *JWTE) Create(sessionId string) (string, error) {
+func (j *JWTE) Create(data JWTData) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sessionId": sessionId,
+		"sessionId": data.SessionId,
+		"number":    data.Number,
 	})
+	fmt.Println(data.Number, data.SessionId)
 	str, err := token.SignedString([]byte(j.Secret))
 	if err != nil {
 		return "", err
 	}
 	return str, nil
+}
+func (j *JWTE) Parse(token string) (bool, *JWTData) {
+	tok, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		return []byte(j.Secret), nil
+	})
+	if err != nil {
+		return false, nil
+	}
+	number := tok.Claims.(jwt.MapClaims)["number"]
+	return tok.Valid, &JWTData{
+		Number: number.(string),
+	}
 }
