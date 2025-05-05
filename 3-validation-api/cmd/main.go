@@ -21,9 +21,8 @@ func main() {
 		Addr:    ":8083",
 		Handler: router,
 	}
-	logger.InfoLog.Println("uisdfisb")
+
 	fmt.Printf("Listen port%v\n", server.Addr)
 	server.ListenAndServe()
 
-	fmt.Println("Работа завершена")
 }

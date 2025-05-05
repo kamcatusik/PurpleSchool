@@ -23,12 +23,16 @@ func LoadConfig() *Config {
 	if err != nil {
 		log.Println("Ошибка загрузки .env файла")
 	}
+	secret, ok := os.LookupEnv("SECRET")
+	if !ok {
+		log.Fatalln("Отсутствует секрет в переменной окружения")
+	}
 	return &Config{
 		Db: DbConfig{
 			Dsn: os.Getenv("DSN"),
 		},
 		Auth: AuthConfig{
-			Secret: os.Getenv("SECRET"),
+			Secret: secret,
 		},
 	}
 }

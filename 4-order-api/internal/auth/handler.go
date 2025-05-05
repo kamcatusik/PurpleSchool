@@ -5,7 +5,6 @@ import (
 	jwte "4-order-api/pkg/JWTE"
 	"4-order-api/pkg/req"
 	"4-order-api/pkg/resp"
-	"fmt"
 	"net/http"
 )
 
@@ -27,19 +26,19 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 	router.HandleFunc("GET /auth/verify", handler.verify)
 }
 func (handler *AuthHandler) register(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("Запрос")
+
 	// получаем тело запроса
 	body, err := req.HandleBody[RegisterRequest](w, request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println("Запрос получен")
+
 	findUser, _ := handler.AuthService.UserRepository.FindUserByNum(body.Number)
 	if findUser == nil {
 		user, _ := handler.AuthService.Register(body.Number)
 		resp.Json(w, user, 201)
-		return
+
 	} else {
 
 		userWithNewSession, err := handler.AuthService.Update(findUser)
@@ -81,7 +80,7 @@ func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request)
 			Token: secret,
 		}
 		resp.Json(w, data, 200)
-		return
+
 	} else {
 		_, err := handler.AuthService.UpdateCode(findUser, body.Code)
 		if err != nil {

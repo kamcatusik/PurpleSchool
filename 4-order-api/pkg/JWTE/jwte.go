@@ -2,6 +2,7 @@ package jwte
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -23,6 +24,7 @@ func (j *JWTE) Create(data JWTData) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sessionId": data.SessionId,
 		"number":    data.Number,
+		"exp":       time.Now().Add(72 * time.Hour).Unix(),
 	})
 	fmt.Println(data.Number, data.SessionId)
 	str, err := token.SignedString([]byte(j.Secret))
@@ -38,7 +40,10 @@ func (j *JWTE) Parse(token string) (bool, *JWTData) {
 	if err != nil {
 		return false, nil
 	}
-	number := tok.Claims.(jwt.MapClaims)["number"]
+	number, ok := tok.Claims.(jwt.MapClaims)["number"]
+	if !ok {
+		return false, nil
+	}
 	return tok.Valid, &JWTData{
 		Number: number.(string),
 	}

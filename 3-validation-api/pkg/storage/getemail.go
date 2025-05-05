@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 )
 
+// возможно не хватает  кому от кого и перенести в сендемейл
 type EmailList struct {
 	Mail string `json:"email" validate:"required,email"`
 	Hash string `json:"hash"`

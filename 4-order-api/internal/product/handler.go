@@ -29,7 +29,7 @@ func NewProductHandler(router *http.ServeMux, product *ProductHandDeps) {
 	router.HandleFunc("PATCH /prod/update/{id}", handler.update)
 	router.HandleFunc("DELETE /prod/delete/{id}", handler.delete)
 	router.HandleFunc("GET /prod/{id}", middleware.Auth(handler.getById, product.Config))
-	router.HandleFunc("GET /all", handler.getAllProduct)
+	router.HandleFunc("GET /all", middleware.Auth(handler.getAllProduct, product.Config))
 }
 func (handler *ProductHandler) create(w http.ResponseWriter, request *http.Request) {
 	body, err := req.HandleBody[ProductCreate](w, request)
@@ -90,6 +90,7 @@ func (handler *ProductHandler) delete(w http.ResponseWriter, request *http.Reque
 func (handler *ProductHandler) getById(w http.ResponseWriter, request *http.Request) {
 	phonNumber, ok := request.Context().Value(middleware.ContextPhoneNumber).(string)
 	if ok {
+		//редирект на страничку register
 		fmt.Println(phonNumber)
 	}
 	idStr := request.PathValue("id")
@@ -102,6 +103,11 @@ func (handler *ProductHandler) getById(w http.ResponseWriter, request *http.Requ
 
 }
 func (handler *ProductHandler) getAllProduct(w http.ResponseWriter, request *http.Request) {
+	phonNumber, ok := request.Context().Value(middleware.ContextPhoneNumber).(string)
+	if ok {
+		fmt.Println(phonNumber)
+	}
+
 	allprod, err := handler.ProductRepository.GetAllProd()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
