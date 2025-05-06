@@ -62,7 +62,5 @@ func (stor *MailStore) WriteFile(content []byte) error {
 		return errors.New("не удалось записать файл")
 	}
 
-	fmt.Println("Запись успешна")
-
 	return nil
 }

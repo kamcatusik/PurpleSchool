@@ -9,10 +9,6 @@ import (
 	"github.com/jordan-wright/email"
 )
 
-type SenderMail struct {
-	TO string
-}
-
 func MailSend(emailLoad *storage.EmailList, sender *configs.Config, bodyMail string) error {
 
 	e := email.NewEmail()

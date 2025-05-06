@@ -48,11 +48,11 @@ func (repos *ProductRepository) GetId(id string) error {
 	}
 	return nil
 }
-func (repos *ProductRepository) GetAllProd() (*[]Product, error) {
+func (repos *ProductRepository) GetAllProd() ([]Product, error) {
 	var allProd []Product
 	res := repos.Database.DB.Find(&allProd)
 	if res.Error != nil {
 		return nil, res.Error
 	}
-	return &allProd, nil
+	return allProd, nil
 }

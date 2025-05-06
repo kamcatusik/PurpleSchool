@@ -25,5 +25,4 @@ func main() {
 	fmt.Printf("Listen port%v\n", server.Addr)
 	server.ListenAndServe()
 
-	fmt.Println("Работа завершена")
 }

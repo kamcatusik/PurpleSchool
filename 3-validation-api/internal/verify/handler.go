@@ -58,7 +58,7 @@ func (handler *EmailHandler) send(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	fmt.Println("Успешно2")
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Email sent successfully"))
 

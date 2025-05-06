@@ -8,10 +8,14 @@ import (
 )
 
 type Config struct {
-	Db DbConfig
+	Db   DbConfig
+	Auth AuthConfig
 }
 type DbConfig struct {
 	Dsn string
+}
+type AuthConfig struct {
+	Secret string
 }
 
 func LoadConfig() *Config {
@@ -19,9 +23,16 @@ func LoadConfig() *Config {
 	if err != nil {
 		log.Println("Ошибка загрузки .env файла")
 	}
+	secret, ok := os.LookupEnv("SECRET")
+	if !ok {
+		log.Fatalln("Отсутствует секрет в переменной окружения")
+	}
 	return &Config{
 		Db: DbConfig{
 			Dsn: os.Getenv("DSN"),
+		},
+		Auth: AuthConfig{
+			Secret: secret,
 		},
 	}
 }
