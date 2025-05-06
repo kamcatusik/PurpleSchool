@@ -64,7 +64,10 @@ func (handler *AuthHandler) verify(w http.ResponseWriter, request *http.Request)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	if body.SessionID == "" || body.Code == "" {
+		http.Error(w, "Сессия или код истекли", http.StatusBadRequest)
+		return
+	}
 	if findUser.SessionID == body.SessionID && findUser.Code == body.Code {
 
 		//выдаем токен
