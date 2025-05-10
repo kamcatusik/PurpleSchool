@@ -3,6 +3,7 @@ package main
 import (
 	"4-order-api/configs"
 	"4-order-api/internal/auth"
+	"4-order-api/internal/order"
 	"4-order-api/internal/product"
 	"4-order-api/internal/user"
 	"4-order-api/pkg/db"
@@ -21,6 +22,7 @@ func main() {
 	//БД
 	userRepository := user.NewUserRepository(db)
 	productRepository := product.NewProductRepository(db)
+	OrderRepository := order.NewOrderRepository(db)
 
 	authService := auth.NewAuthRepository(userRepository)
 	//обработчики
@@ -31,6 +33,11 @@ func main() {
 	product.NewProductHandler(router, &product.ProductHandDeps{
 		ProductRepository: productRepository,
 		Config:            conf,
+	})
+	order.NewOrderHandler(router, order.OrderHandlerDeps{
+		Config:            conf,
+		OrderRepository:   OrderRepository,
+		ProductRepository: productRepository,
 	})
 	server := http.Server{
 		Addr:    ":8085",
