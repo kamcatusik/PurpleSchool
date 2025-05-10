@@ -1,8 +1,7 @@
 package main
 
 import (
-	"4-order-api/internal/product"
-	"4-order-api/internal/user"
+	"4-order-api/internal/models"
 	"log"
 	"os"
 
@@ -21,6 +20,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.AutoMigrate(&product.Product{}, &user.User{})
+
+	err = db.SetupJoinTable(&models.Order{}, "Products", &models.OrderProduct{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = db.SetupJoinTable(&models.Product{}, "Orders", &models.OrderProduct{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	//	db.Migrator().DropTable(&models.Product{}, &user.User{}, &models.Order{})
+	db.AutoMigrate(&models.Product{}, &models.User{}, &models.Order{})
 	log.Println("Новые поля добавлены.")
 }
