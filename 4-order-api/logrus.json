@@ -1,1 +1,4 @@
-{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-10T17:56:53+07:00","timework":16902200,"urlpath":"/order/50"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-11T23:04:49+07:00","timework":21420500,"urlpath":"/order"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-11T23:05:01+07:00","timework":9526300,"urlpath":"/my-orders/2"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-11T23:05:52+07:00","timework":5439400,"urlpath":"/order/115"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-11T23:05:56+07:00","timework":4398600,"urlpath":"/order/114"}

@@ -44,9 +44,3 @@ func NewProduct(name, des string, images []string, quantity uint) *Product {
 		Quantity:    quantity,
 	}
 }
-func NewOrders(userId uint, product []*Product) *Order {
-	return &Order{
-		UserId:   userId,
-		Products: product,
-	}
-}

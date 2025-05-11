@@ -3,6 +3,7 @@ package product
 import (
 	"4-order-api/internal/models"
 	"4-order-api/pkg/db"
+	"errors"
 )
 
 type ProductRepository struct {
@@ -58,4 +59,12 @@ func (repos *ProductRepository) GetAllProd() ([]models.Product, error) {
 		return nil, res.Error
 	}
 	return allProd, nil
+}
+func (repo *ProductRepository) FindProductById(productIDs []uint) ([]*models.Product, error) {
+	var products []*models.Product
+	if err := repo.Database.DB.Where("id IN ?", productIDs).Find(&products).Error; err != nil {
+
+		return nil, errors.New("продукты не найдены")
+	}
+	return products, nil
 }
