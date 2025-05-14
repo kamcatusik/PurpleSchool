@@ -4,7 +4,6 @@ import (
 	"4-order-api/internal/models"
 	"4-order-api/pkg/db"
 	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -38,7 +37,7 @@ func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantP
 				ProductID: prodquant.ProductID,
 				Quantity:  prodquant.Quantity,
 			}
-			fmt.Println(prodquant.Quantity)
+
 			if err := tx.Create(&orderProduct).Error; err != nil {
 				return err
 			}
@@ -46,7 +45,6 @@ func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantP
 		}
 		return nil
 	})
-	fmt.Println(order.Products)
 
 	return order, nil
 }

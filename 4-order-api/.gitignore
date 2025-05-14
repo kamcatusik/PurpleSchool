@@ -1,5 +1,5 @@
 *.env
 *.yaml
-postgres-data/** 
+postgres-data/
 *.json
 *.txt

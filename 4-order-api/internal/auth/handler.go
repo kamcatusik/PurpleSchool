@@ -23,7 +23,7 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 		AuthService: deps.AuthService,
 	}
 	router.HandleFunc("POST /auth", handler.register)
-	router.HandleFunc("GET /auth/verify", handler.verify)
+	router.HandleFunc("POST /auth/verify", handler.verify)
 }
 func (handler *AuthHandler) register(w http.ResponseWriter, request *http.Request) {
 

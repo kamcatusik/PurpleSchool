@@ -1,4 +1,5 @@
-{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-11T23:04:49+07:00","timework":21420500,"urlpath":"/order"}
-{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-11T23:05:01+07:00","timework":9526300,"urlpath":"/my-orders/2"}
-{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-11T23:05:52+07:00","timework":5439400,"urlpath":"/order/115"}
-{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-11T23:05:56+07:00","timework":4398600,"urlpath":"/order/114"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-14T21:45:48+07:00","timework":8709800,"urlpath":"/auth/verify"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":400,"time":"2025-05-14T21:46:00+07:00","timework":1359000,"urlpath":"/auth/verify"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":400,"time":"2025-05-14T21:46:03+07:00","timework":1414000,"urlpath":"/auth/verify"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-14T21:46:44+07:00","timework":11550300,"urlpath":"/auth/verify"}
+{"level":"info","method":"GET","msg":"Получен ","statuscode":200,"time":"2025-05-14T21:46:48+07:00","timework":999700,"urlpath":"/auth/verify"}

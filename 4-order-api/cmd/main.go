@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func App() *http.ServeMux {
 	fmt.Println("Run")
 	logger.LogInit()
 	router := http.NewServeMux()
@@ -39,9 +39,14 @@ func main() {
 		OrderRepository:   OrderRepository,
 		ProductRepository: productRepository,
 	})
+	return router
+}
+
+func main() {
+	app := App()
 	server := http.Server{
 		Addr:    ":8085",
-		Handler: middleware.Logging(router),
+		Handler: middleware.Logging(app),
 	}
 	fmt.Println("БД Создана")
 	fmt.Printf("Listen port%v\n", server.Addr)

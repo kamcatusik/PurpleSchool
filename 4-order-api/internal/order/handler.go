@@ -29,11 +29,11 @@ func NewOrderHandler(router *http.ServeMux, deps OrderHandlerDeps) {
 		OrderRepository:   deps.OrderRepository,
 		ProductRepository: deps.ProductRepository,
 	}
-	router.HandleFunc("POST /order", middleware.Auth(handler.order, deps.Config))
+	router.HandleFunc("POST /order", middleware.Auth(handler.Order, deps.Config))
 	router.HandleFunc("GET /order/{id}", middleware.Auth(handler.getOrder, deps.Config))
 	router.HandleFunc("GET /my-orders/{id}", middleware.Auth(handler.getOrderByUser, deps.Config))
 }
-func (handler *OrderHandler) order(w http.ResponseWriter, request *http.Request) {
+func (handler *OrderHandler) Order(w http.ResponseWriter, request *http.Request) {
 	body, err := req.HandleBody[OrderRequest](w, request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
