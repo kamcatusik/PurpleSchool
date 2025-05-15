@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc0OTMyMDgsIm51bWJlciI6Ijg5MTQ3Nzc0NTY0Iiwic2Vzc2lvbklkIjoiNUsxbVZLQmdmQVVUIn0.Kkz9mkeTnVY6v_kNGoKWsJxN7Tf7qIWQ_8TP7mQ7MFc"
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc1NDU4MDksIm51bWJlciI6Ijg5MTQ3Nzc0NTY0Iiwic2Vzc2lvbklkIjoiVzdYeUpzcmhsYXRtIn0.ZEXhvVeSofyva1I_tVFhwr_6slxmrTdulzmRGhL2c7I"
 
 func initDB() *gorm.DB {
 	err := godotenv.Load(".env")
@@ -35,12 +35,13 @@ func initDB() *gorm.DB {
 func initData(db *gorm.DB) error {
 	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := db.Create(&models.User{
-			Number:    "89056879898",
-			SessionID: "5K1mVKBgfAUT",
+			Number:    "89147774564",
+			SessionID: "W7XyJsrhlatm",
 			Code:      "0000",
 		}).Error; err != nil {
 			return err
 		}
+
 		if err := db.Create(&models.Product{
 			Name:        "Печенька",
 			Description: "Шоколадная глазурь",
@@ -53,23 +54,29 @@ func initData(db *gorm.DB) error {
 		return nil
 	})
 	if err != nil {
-		log.Fatal("Создание не удалось")
+		log.Fatal(err)
 	}
 	return nil
 }
 
 func deleteData(db *gorm.DB) error {
 	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Unscoped().Delete(&models.OrderProduct{}, 1).Error; err != nil {
+			return err
+		}
+		if err := tx.Unscoped().Delete(&models.Order{}, 1).Error; err != nil {
+			return err
+		}
 		if err := tx.Unscoped().Delete(&models.User{}, 1).Error; err != nil {
 			return err
 		}
-		if err := tx.Unscoped().Where("id = ?", 1).Delete(&models.Product{}).Error; err != nil {
+		if err := tx.Unscoped().Delete(&models.Product{}, 1).Error; err != nil {
 			return err
 		}
 		return nil
 	})
 	if err != nil {
-		log.Fatal("Удаление не удалось")
+		log.Fatal(err)
 	}
 	return nil
 }
@@ -95,11 +102,13 @@ func TestNewOrderSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	client := ts.Client()
 	res, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if res.StatusCode != http.StatusCreated {
 		t.Fatalf("Ожидали %d,получили %d", http.StatusCreated, res.StatusCode)
 	}

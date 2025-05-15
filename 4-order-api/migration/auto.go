@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.Migrator().DropTable(&models.Product{}, &models.User{}, &models.Order{})
-	db.AutoMigrate(&models.Product{}, &models.User{}, &models.Order{})
+	db.Migrator().DropTable(&models.OrderProduct{}, &models.Product{}, &models.User{}, &models.Order{})
+	db.AutoMigrate(&models.Product{}, &models.User{}, &models.Order{}, &models.OrderProduct{})
 	log.Println("Новые поля добавлены.")
 }

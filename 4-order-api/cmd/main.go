@@ -38,6 +38,7 @@ func App() *http.ServeMux {
 		Config:            conf,
 		OrderRepository:   OrderRepository,
 		ProductRepository: productRepository,
+		UserRepository:    userRepository,
 	})
 	return router
 }

@@ -20,7 +20,7 @@ func NewOrderRepository(database *db.Db) *OrderRepository {
 func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantProductID) (*models.Order, error) {
 
 	repo.Database.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(order).Error; err != nil {
+		if err := tx.Debug().Create(order).Error; err != nil {
 			return err
 		}
 
@@ -31,15 +31,6 @@ func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantP
 			}
 			if product.Quantity < prodquant.Quantity {
 				return errors.New("недостаточно товара")
-			}
-			orderProduct := models.OrderProduct{
-				OrderID:   order.ID,
-				ProductID: prodquant.ProductID,
-				Quantity:  prodquant.Quantity,
-			}
-
-			if err := tx.Create(&orderProduct).Error; err != nil {
-				return err
 			}
 
 		}

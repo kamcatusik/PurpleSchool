@@ -31,6 +31,7 @@ func (repos *ProductRepository) Update(product *models.Product) (*models.Product
 }
 func (repos *ProductRepository) FindId(id uint) (*models.Product, error) {
 	var prod models.Product
+
 	res := repos.Database.DB.First(&prod, id)
 	if res.Error != nil {
 		return nil, res.Error
@@ -62,9 +63,14 @@ func (repos *ProductRepository) GetAllProd() ([]models.Product, error) {
 }
 func (repo *ProductRepository) FindProductById(productIDs []uint) ([]*models.Product, error) {
 	var products []*models.Product
-	if err := repo.Database.DB.Where("id IN ?", productIDs).Find(&products).Error; err != nil {
 
+	if err := repo.Database.DB.Debug().Where("id IN ?", productIDs).Find(&products).Error; err != nil {
+
+		return nil, errors.New("ошибка добавления продуктов")
+	}
+	if len(products) == 0 {
 		return nil, errors.New("продукты не найдены")
 	}
+
 	return products, nil
 }

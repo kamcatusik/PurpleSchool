@@ -18,7 +18,7 @@ type Product struct {
 	Name         string         `json:"name"`
 	Description  string         `json:"description"`
 	Images       pq.StringArray `json:"images" gorm:"type:text[]"`
-	Orders       []*Order       `gorm:"many2many:product_orders;"`
+	Orders       []*Order       `gorm:"many2many:order_products;"`
 	Quantity     uint           `json:"quantity"`
 	OrderProduct []OrderProduct `gorm:"foreignKey:ProductID"`
 }
@@ -26,7 +26,7 @@ type Product struct {
 type Order struct {
 	gorm.Model
 	UserId   uint       `json:"user_id"`
-	Products []*Product `gorm:"many2many:product_orders;"`
+	Products []*Product `gorm:"many2many:order_products;"`
 }
 
 // промежуточная таблица
