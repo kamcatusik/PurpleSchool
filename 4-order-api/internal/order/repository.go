@@ -32,6 +32,15 @@ func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantP
 			if product.Quantity < prodquant.Quantity {
 				return errors.New("недостаточно товара")
 			}
+			orderProduct := models.OrderProduct{
+				OrderID:   order.ID,
+				ProductID: prodquant.ProductID,
+				Quantity:  prodquant.Quantity,
+			}
+
+			if err := tx.Debug().Save(&orderProduct).Error; err != nil {
+				return err
+			}
 
 		}
 		return nil
