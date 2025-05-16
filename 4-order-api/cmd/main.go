@@ -3,6 +3,7 @@ package main
 import (
 	"4-order-api/configs"
 	"4-order-api/internal/auth"
+	"4-order-api/internal/order"
 	"4-order-api/internal/product"
 	"4-order-api/internal/user"
 	"4-order-api/pkg/db"
@@ -12,7 +13,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func App() *http.ServeMux {
 	fmt.Println("Run")
 	logger.LogInit()
 	router := http.NewServeMux()
@@ -21,8 +22,10 @@ func main() {
 	//БД
 	userRepository := user.NewUserRepository(db)
 	productRepository := product.NewProductRepository(db)
+	OrderRepository := order.NewOrderRepository(db)
 
 	authService := auth.NewAuthRepository(userRepository)
+	orderService := order.NewOrderService(userRepository, productRepository)
 	//обработчики
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
 		Config:      conf,
@@ -32,9 +35,19 @@ func main() {
 		ProductRepository: productRepository,
 		Config:            conf,
 	})
+	order.NewOrderHandler(router, order.OrderHandlerDeps{
+		Config:          conf,
+		OrderRepository: OrderRepository,
+		OrderService:    orderService,
+	})
+	return router
+}
+
+func main() {
+	app := App()
 	server := http.Server{
 		Addr:    ":8085",
-		Handler: middleware.Logging(router),
+		Handler: middleware.Logging(app),
 	}
 	fmt.Println("БД Создана")
 	fmt.Printf("Listen port%v\n", server.Addr)

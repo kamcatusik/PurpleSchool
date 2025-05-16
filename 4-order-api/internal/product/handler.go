@@ -2,6 +2,7 @@ package product
 
 import (
 	"4-order-api/configs"
+	"4-order-api/internal/models"
 	"4-order-api/pkg/middleware"
 	"4-order-api/pkg/req"
 	"4-order-api/pkg/resp"
@@ -37,7 +38,7 @@ func (handler *ProductHandler) create(w http.ResponseWriter, request *http.Reque
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	product := NewProduct(body.Name, body.Description, body.Images)
+	product := models.NewProduct(body.Name, body.Description, body.Images, body.Quantity)
 	createProd, err := handler.ProductRepository.Create(product)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -58,11 +59,12 @@ func (handler *ProductHandler) update(w http.ResponseWriter, request *http.Reque
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	product, err := handler.ProductRepository.Update(&Product{
+	product, err := handler.ProductRepository.Update(&models.Product{
 		Model:       gorm.Model{ID: uint(id)},
 		Name:        body.Name,
 		Description: body.Description,
 		Images:      body.Images,
+		Quantity:    body.Quantity,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -73,8 +75,9 @@ func (handler *ProductHandler) update(w http.ResponseWriter, request *http.Reque
 }
 func (handler *ProductHandler) delete(w http.ResponseWriter, request *http.Request) {
 	idStr := request.PathValue("id")
+	id, _ := strconv.Atoi(idStr)
 
-	_, err := handler.ProductRepository.FindId(idStr)
+	_, err := handler.ProductRepository.FindId(uint(id))
 	if err != nil {
 		resp.Json(w, "Карточка не найдена", http.StatusOK)
 		return
@@ -94,7 +97,8 @@ func (handler *ProductHandler) getById(w http.ResponseWriter, request *http.Requ
 		fmt.Println(phonNumber)
 	}
 	idStr := request.PathValue("id")
-	getProduct, err := handler.ProductRepository.FindId(idStr)
+	id, _ := strconv.Atoi(idStr)
+	getProduct, err := handler.ProductRepository.FindId(uint(id))
 	if err != nil {
 		resp.Json(w, "Карточка не найдена", http.StatusOK)
 		return
