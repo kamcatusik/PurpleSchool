@@ -3,8 +3,6 @@ package order
 import (
 	"4-order-api/configs"
 	"4-order-api/internal/models"
-	"4-order-api/internal/product"
-	"4-order-api/internal/user"
 	"4-order-api/pkg/middleware"
 	"4-order-api/pkg/req"
 	"4-order-api/pkg/resp"
@@ -17,22 +15,19 @@ import (
 type OrderHandlerDeps struct {
 	*OrderRepository
 	*configs.Config
-	*product.ProductRepository
-	*user.UserRepository
+	*OrderService
 }
 type OrderHandler struct {
 	*configs.Config
 	*OrderRepository
-	*product.ProductRepository
-	*user.UserRepository
+	*OrderService
 }
 
 func NewOrderHandler(router *http.ServeMux, deps OrderHandlerDeps) {
 	handler := &OrderHandler{
-		Config:            deps.Config,
-		OrderRepository:   deps.OrderRepository,
-		ProductRepository: deps.ProductRepository,
-		UserRepository:    deps.UserRepository,
+		Config:          deps.Config,
+		OrderRepository: deps.OrderRepository,
+		OrderService:    deps.OrderService,
 	}
 	router.HandleFunc("POST /order", middleware.Auth(handler.Order, deps.Config))
 	router.HandleFunc("GET /order/{id}", middleware.Auth(handler.getOrder, deps.Config))
@@ -49,37 +44,13 @@ func (handler *OrderHandler) Order(w http.ResponseWriter, request *http.Request)
 	if !ok {
 		fmt.Println(phonNumber)
 	}
-	fmt.Println(phonNumber)
-	dbUser, err := handler.UserRepository.FindUserByNum(phonNumber)
-	if err != nil || dbUser == nil {
 
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	if dbUser.ID != body.UserID {
-		//редирект на /verify
-		http.Error(w, "Пользователь не найден", http.StatusNotFound)
-		return //пока заглушка
-	}
-	fmt.Printf("DbUserId %d\n", dbUser.ID)
-	fmt.Printf("Body ID %d\n", body.UserID)
-	productIDs := make([]uint, len(body.Products))
-	for i, p := range body.Products {
-		productIDs[i] = p.ProductID
-	}
-	products, err := handler.ProductRepository.FindProductById(productIDs)
+	products, err := handler.CreateOrderServ(body.Products, body.UserID, phonNumber)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Printf("DbUserId %d\n", dbUser.ID)
-	orderResp := &models.Order{
-		UserId:   dbUser.ID,
-		Products: products,
-	}
-	fmt.Printf("Body ID %d", body.UserID)
-
-	orderResp, err = handler.OrderRepository.CreateOrder(orderResp, body.Products)
+	orderResp, err := handler.OrderRepository.CreateOrder(body.UserID, products, body.Products)
 	fmt.Println(orderResp.ID)
 
 	newOrder := GetResponseOrder(orderResp)

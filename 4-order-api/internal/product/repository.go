@@ -61,7 +61,7 @@ func (repos *ProductRepository) GetAllProd() ([]models.Product, error) {
 	}
 	return allProd, nil
 }
-func (repo *ProductRepository) FindProductById(productIDs []uint) ([]*models.Product, error) {
+func (repo *ProductRepository) FindProductArrayById(productIDs []uint) ([]*models.Product, error) {
 	var products []*models.Product
 
 	if err := repo.Database.DB.Debug().Where("id IN ?", productIDs).Find(&products).Error; err != nil {

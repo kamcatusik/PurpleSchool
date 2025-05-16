@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc1NDU4MDksIm51bWJlciI6Ijg5MTQ3Nzc0NTY0Iiwic2Vzc2lvbklkIjoiVzdYeUpzcmhsYXRtIn0.ZEXhvVeSofyva1I_tVFhwr_6slxmrTdulzmRGhL2c7I"
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc2NTM1MzcsIm51bWJlciI6Ijg5MTQ3Nzc0NTU1Iiwic2Vzc2lvbklkIjoib3RwdGNEbmdYeTdDIn0._Ul5H2LymZR6EtGfGYZACqCOIGJeYEAeb79n_yFXEdQ"
 
 func initDB() *gorm.DB {
 	err := godotenv.Load(".env")
@@ -35,8 +35,8 @@ func initDB() *gorm.DB {
 func initData(db *gorm.DB) error {
 	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := db.Create(&models.User{
-			Number:    "89147774564",
-			SessionID: "W7XyJsrhlatm",
+			Number:    "89147774555",
+			SessionID: "otptcDngXy7C",
 			Code:      "0000",
 		}).Error; err != nil {
 			return err

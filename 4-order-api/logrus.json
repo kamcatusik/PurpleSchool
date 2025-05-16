@@ -1,0 +1,12 @@
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:18:41+07:00","timework":17430700,"urlpath":"/auth"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":400,"time":"2025-05-16T18:18:45+07:00","timework":1707700,"urlpath":"/auth/verify"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":400,"time":"2025-05-16T18:18:47+07:00","timework":1282800,"urlpath":"/auth/verify"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":200,"time":"2025-05-16T18:18:56+07:00","timework":8789800,"urlpath":"/auth/verify"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":200,"time":"2025-05-16T18:18:57+07:00","timework":2261200,"urlpath":"/auth/verify"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:20:10+07:00","timework":10733200,"urlpath":"/prod/create"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:20:20+07:00","timework":8533500,"urlpath":"/prod/create"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:20:23+07:00","timework":20222000,"urlpath":"/order"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:21:00+07:00","timework":41409300,"urlpath":"/order"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:21:01+07:00","timework":13984500,"urlpath":"/order"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:21:01+07:00","timework":13005400,"urlpath":"/order"}
+{"level":"info","method":"POST","msg":"Получен ","statuscode":201,"time":"2025-05-16T18:21:02+07:00","timework":13964500,"urlpath":"/order"}

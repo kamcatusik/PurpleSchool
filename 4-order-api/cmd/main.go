@@ -25,6 +25,7 @@ func App() *http.ServeMux {
 	OrderRepository := order.NewOrderRepository(db)
 
 	authService := auth.NewAuthRepository(userRepository)
+	orderService := order.NewOrderService(userRepository, productRepository)
 	//обработчики
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
 		Config:      conf,
@@ -35,10 +36,9 @@ func App() *http.ServeMux {
 		Config:            conf,
 	})
 	order.NewOrderHandler(router, order.OrderHandlerDeps{
-		Config:            conf,
-		OrderRepository:   OrderRepository,
-		ProductRepository: productRepository,
-		UserRepository:    userRepository,
+		Config:          conf,
+		OrderRepository: OrderRepository,
+		OrderService:    orderService,
 	})
 	return router
 }

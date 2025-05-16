@@ -3,6 +3,7 @@ package order
 import (
 	"4-order-api/internal/models"
 	"4-order-api/pkg/db"
+
 	"errors"
 
 	"gorm.io/gorm"
@@ -17,10 +18,13 @@ func NewOrderRepository(database *db.Db) *OrderRepository {
 		Database: database,
 	}
 }
-func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantProductID) (*models.Order, error) {
-
+func (repo *OrderRepository) CreateOrder(bodyUser uint, products []*models.Product, quantProd []QuantProductID) (*models.Order, error) {
+	orderResp := &models.Order{
+		UserId:   bodyUser,
+		Products: products,
+	}
 	repo.Database.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Debug().Create(order).Error; err != nil {
+		if err := tx.Debug().Create(orderResp).Error; err != nil {
 			return err
 		}
 
@@ -33,7 +37,7 @@ func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantP
 				return errors.New("недостаточно товара")
 			}
 			orderProduct := models.OrderProduct{
-				OrderID:   order.ID,
+				OrderID:   orderResp.ID,
 				ProductID: prodquant.ProductID,
 				Quantity:  prodquant.Quantity,
 			}
@@ -46,7 +50,7 @@ func (repo *OrderRepository) CreateOrder(order *models.Order, quantProd []QuantP
 		return nil
 	})
 
-	return order, nil
+	return orderResp, nil
 }
 
 func (repo *OrderRepository) FindOrderId(userId uint) ([]*models.Order, error) {

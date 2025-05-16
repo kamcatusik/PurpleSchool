@@ -3,6 +3,7 @@ package user
 import (
 	"4-order-api/internal/models"
 	"4-order-api/pkg/db"
+	"fmt"
 )
 
 type UserRepository struct {
@@ -27,6 +28,7 @@ func (repo *UserRepository) FindUserByNum(number string) (*models.User, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
+	fmt.Printf("Имя пользователя: %v ID Пользователя: %v\n", user.Number, user.ID)
 	return &user, nil
 }
 func (repo *UserRepository) UpdateSessionId(user *models.User) (*models.User, error) {
